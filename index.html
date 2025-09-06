@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- =========================================================
+       Hearts in the Margins — single-file static site
+       Tech: HTML + CSS + vanilla JS (no build tools)
+       Design: Coquette/retro — baby pink, cherry accents, bows
+       Font: Press Start 2P (pixel/arcade vibe)
+       ========================================================= -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hearts in the Margins · Book Club</title>
+
+  <!-- Retro pixel font -->
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+
+  <style>
+    /* =========================
+       THEME TOKENS (easy edits)
+       ========================= */
+    :root{
+      /* Colors */
+      --pink: #FFCFEF; /* baby pink background */
+      --cherry:#D90452; /* accent for buttons/links */
+      --cherry-dark:#980238;
+      --ink:#0b0f14; /* dark text */
+      --panel:#fff; /* white card/panel */
+      --grid:#ffe6f6; /* subtle grid over pink */
+      --border:#f6a9c9; /* soft border */
+      --border-strong:#c66;/* stronger border */
+      --select:#ffeaf5; /* selected card */
+
+      /* Sizing */
+      --radius:14px;
+      --shadow:6px 6px 0 var(--ink);
+
+      /* Animation */
+      --quick: 120ms ease-in-out;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      background:
+        repeating-linear-gradient(0deg, var(--grid) 0 2px, transparent 2px 22px),
+        repeating-linear-gradient(90deg, var(--grid) 0 2px, transparent 2px 22px),
+        var(--pink);
+      color:var(--ink);
+      font-family:'Press Start 2P', system-ui, sans-serif;
+      line-height:1.6;
+      letter-spacing:.2px;
+    }
+
+    .wrap{ max-width:940px; margin:0 auto; padding:18px 14px 120px; }
+
+    /* =========================
+       HEADER / HERO
+       ========================= */
+    .hero{
+      background:var(--panel);
+      border:4px solid var(--ink);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero h1{
+      margin:0 0 8px;
+      font-size:20px;
+      text-align:center;
+    }
+    .tagline{
+      text-align:center;
+      font-size:12px;
+      color:var(--cherry-dark);
+      margin:0 0 8px;
+    }
+    /* Tiny bow separators (motif) */
+    .bow-row{
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      margin:8px 0 0;
+    }
+    .bow{ filter: drop-shadow(2px 2px 0 var(--ink)); }
+
+    /* =========================
+       COMMON UI
+       ========================= */
+    .panel{
+      background:var(--panel);
+      border:4px solid var(--ink);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:16px;
+      margin:16px 0;
+    }
+    .section-title{
+      display:flex; align-items:center; gap:8px;
+      margin:0 0 12px; font-size:14px; color:var(--cherry-dark);
+    }
+    .grid{
+      display:grid; gap:12px;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    @media (max-width:720px){
+      .grid{ grid-template-columns:1fr; }
+    }
+
+    .book-card{
+      border:2px solid var(--border);
+      border-radius:var(--radius);
+      background:#fff;
+      padding:14px;
+      transition:border-color var(--quick), background var(--quick), box-shadow var(--quick);
+    }
+    .book-card:hover{
+      border-color:var(--border-strong);
+      background:var(--select);
+      box-shadow:0 0 0 4px rgba(217,4,82,.1) inset;
+    }
+    .book-title{ font-size:12px; margin:0 0 6px; }
+    .book-meta{ font-size:11px; opacity:.9; }
+
+    /* Buttons / links */
+    .btn{
+      appearance:none; border:none; cursor:pointer;
+      background:var(--cherry); color:#fff;
+      border:3px solid var(--cherry-dark);
+      box-shadow:4px 4px 0 var(--cherry-dark);
+      border-radius:12px;
+      padding:12px 14px; font:inherit; font-size:12px;
+      transition:transform .02s ease-in;
+    }
+    .btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--cherry-dark); }
+    a.link{ color:var(--cherry-dark); text-decoration:underline; }
+
+    /* Forms */
+    .field{ display:flex; flex-direction:column; gap:6px; margin:8px 0; }
+    label{ font-size:11px; }
+    input[type="text"]{
+      font:inherit; font-size:12px; padding:12px;
+      border:2px solid var(--ink); border-radius:10px;
+      background:#fff;
+    }
+    .help{ font-size:11px; opacity:.8; }
+
+    /* Pixel calendar */
+    .calendar{
+      display:grid; gap:8px;
+      grid-template-columns: repeat(7, 1fr);
+      border:2px solid var(--ink); border-radius:12px; padding:10px;
+      background:#fff;
+    }
+    .cal-cell{
+      border:2px solid var(--border);
+      border-radius:10px;
+      min-height:64px; padding:8px;
+      background:#fff;
+      position:relative;
+      transition:background var(--quick), border-color var(--quick);
+    }
+    .cal-cell.today{ background:var(--select); border-color:var(--border-strong); }
+    .cal-cell .day{ position:absolute; top:6px; right:8px; font-size:10px; opacity:.6; }
+    .cal-note{ font-size:10px; margin-top:18px; color:var(--cherry-dark); }
+
+    /* Footer */
+    .footer-note{
+      text-align:center; font-size:11px; opacity:.7; margin-top:24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- =========================================================
+         HEADER / HERO
+         - Edit the h1 to rename the club
+         - Edit the tagline text to change your mission line
+         ========================================================= -->
+    <header class="hero" aria-labelledby="site-title">
+      <h1 id="site-title">Hearts in the Margins</h1>
+      <p class="tagline">“we read what’s hard — to keep our hearts soft”</p>
+
+      <!-- Bows motif row (you can delete if you want it simpler) -->
+      <div class="bow-row" aria-hidden="true">
+        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
+        </svg>
+        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
+        </svg>
+        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
+        </svg>
+      </div>
+    </header>
+
+    <!-- =========================================================
+         CURRENT READ (edit text only)
+         ========================================================= -->
+    <section class="panel" aria-labelledby="current-read">
+      <h2 id="current-read" class="section-title">📖 Current Read</h2>
+      <div class="book-card">
+        <h3 class="book-title"><em>Hillbilly Elegy</em> — JD Vance</h3>
+        <p class="book-meta">
+          We chose this book because it challenges us — a hard read that helps keep our minds open.
+          <br /><strong>Next discussion:</strong> TBA
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PAST READS (add/remove cards freely)
+         ========================================================= -->
+    <section class="panel" aria-labelledby="past-reads">
+      <h2 id="past-reads" class="section-title">✨ Past Reads</h2>
+
+      <div class="grid">
+        <article class="book-card">
+          <h3 class="book-title"><em>Dead Aid: Why Aid Is Not Working and How There Is a Better Way for Africa</em> — Dambisa Moyo</h3>
+          <p class="book-meta">A bold counter-argument to mainstream development narratives.</p>
+        </article>
+
+        <article class="book-card">
+          <h3 class="book-title"><em>Woke Inc</em> — Vivek Ramaswamy</h3>
+          <p class="book-meta">A critique of corporate activism and modern politics.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SUGGEST A BOOK (anonymous)
+         - Replace WEBHOOK_URL with your Formspree endpoint
+         - Title + Author only; optional note (links blocked)
+         - Includes a honeypot field (#clubhouse) to catch bots
+         ========================================================= -->
+    <section class="panel" aria-labelledby="suggest">
+      <h2 id="suggest" class="section-title">💌 Suggest a Book (Anonymous)</h2>
+
+      <form id="suggestForm" novalidate>
+        <!-- Title -->
+        <div class="field">
+          <label for="sTitle">Book title *</label>
+          <input id="sTitle" name="title" type="text" required placeholder="e.g., The Righteous Mind" />
+        </div>
+
+        <!-- Author -->
+        <div class="field">
+          <label for="sAuthor">Author *</label>
+          <input id="sAuthor" name="author" type="text" required placeholder="e.g., Jonathan Haidt" />
+        </div>
+
+        <!-- Optional short note (we block links to reduce spam/phishing) -->
+        <div class="field">
+          <label for="sNote">Why this book? (optional, no links)</label>
+          <input id="sNote" name="note" type="text" placeholder="One line about why it belongs on our list" maxlength="160" />
+          <div class="help">We ignore messages containing URLs to keep everyone safe.</div>
+        </div>
+
+        <!-- Honeypot (hidden from humans; bots often fill every field) -->
+        <input type="text" id="clubhouse" name="clubhouse" style="display:none" tabindex="-1" autocomplete="off" />
+
+        <button class="btn" type="submit">Send suggestion</button>
+        <div id="sStatus" class="help" role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <!-- =========================================================
+         EVENTS CALENDAR (playful pixel grid)
+         - Static example month with TBA "quests"
+         - Edit days/notes by changing CAL_DATA in the script
+         ========================================================= -->
+    <section class="panel" aria-labelledby="events">
+      <h2 id="events" class="section-title">🗓 Events (Pixel Calendar)</h2>
+      <div id="calendar" class="calendar" aria-label="Month view calendar"></div>
+      <p class="help">We’ll post meeting dates here. For now: <strong>TBA</strong>.</p>
+    </section>
+
+    <!-- =========================================================
+         FOOTER
+         ========================================================= -->
+    <footer class="footer-note">♡ Hearts in the Margins · made with bows &amp; books ♡</footer>
+  </div>
+
+  <script>
+    /* ============================================================
+       CONFIG AREA — EDIT SAFELY
+       - Put your Formspree URL below (keep quotes)
+       - Update CAL_DATA for little "quest" style notes
+       ============================================================ */
+    const WEBHOOK_URL = "YOUR_FORMSPREE_ENDPOINT_HERE"; // e.g., "https://formspree.io/f/xandlaqr"
+
+    // Block obvious links in free-text (keeps submissions safe)
+    const LINK_RE = /(https?:\/\/|www\.|\.com\b|\.net\b|\.org\b|\.io\b|\.jp\b|\.ru\b|\.cn\b)/i;
+
+    // Simple calendar data (example month). Change month/year/notes as needed.
+    const CAL_DATA = {
+      year: new Date().getFullYear(),
+      month: new Date().getMonth(), // 0=Jan ... 11=Dec (auto current month)
+      // Put notes keyed by day number. Example: 12: "Pick next book"
+      notes: {
+        // Example placeholders you can edit later:
+        // 5: "Reading sprint",
+        // 17: "TBA: discussion"
+      }
+    };
+
+    /* ============================================================
+       SUGGESTION FORM HANDLER
+       - Validates required fields
+       - Blocks URLs in the optional note
+       - Uses a honeypot field to drop basic bots
+       - Sends JSON to Formspree
+       ============================================================ */
+    const form = document.getElementById('suggestForm');
+    const sTitle = document.getElementById('sTitle');
+    const sAuthor = document.getElementById('sAuthor');
+    const sNote = document.getElementById('sNote');
+    const sStatus = document.getElementById('sStatus');
+    const honeypot = document.getElementById('clubhouse');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      sStatus.textContent = '';
+
+      // 1) Honeypot: if filled, treat as spam and silently succeed
+      if (honeypot.value) {
+        sStatus.textContent = "Thanks! (If you're human and see this, please try again.)";
+        form.reset();
+        return;
+      }
+
+      // 2) Required fields
+      if (!sTitle.value.trim() || !sAuthor.value.trim()) {
+        sStatus.textContent = "Please include both a title and an author.";
+        return;
+      }
+
+      // 3) No links in optional note (to reduce phishing)
+      if (sNote.value && LINK_RE.test(sNote.value)) {
+        sStatus.textContent = "Please remove links/URLs from the note.";
+        return;
+      }
+
+      // 4) Build payload (keep it short & clear for your inbox)
+      const payload = {
+        type: "book_suggestion",
+        title: sTitle.value.trim(),
+        author: sAuthor.value.trim(),
+        note: (sNote.value || '').trim()
+      };
+
+      // 5) Submit to Formspree
+      sStatus.textContent = "Sending…";
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", "Accept": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          sStatus.textContent = "Thank you! Your suggestion was sent.";
+          form.reset();
+        } else {
+          sStatus.textContent = "Sorry—couldn't send right now (" + res.status + ").";
+        }
+      } catch (err) {
+        sStatus.textContent = "Network error—please try again in a moment.";
+      }
+    });
+
+    /* ============================================================
+       PLAYFUL PIXEL CALENDAR
+       - Renders a simple month grid
+       - Highlights "today"
+       - Drops your notes (quests) into cells
+       - To freeze a specific month, set CAL_DATA.year/month manually
+       ============================================================ */
+    function buildCalendar(container, conf){
+      const {year, month, notes} = conf;
+      container.innerHTML = "";
+
+      // Day names row (Sun-first; change order if you prefer Mon-first)
+      const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+      dayNames.forEach(name=>{
+        const h = document.createElement('div');
+        h.className = 'cal-cell';
+        h.style.background = '#fff4f8';
+        h.style.fontWeight = 'bold';
+        h.textContent = name;
+        container.appendChild(h);
+      });
+
+      // Calculate month bounds
+      const first = new Date(year, month, 1);
+      const startDay = first.getDay(); // 0=Sun
+      const daysInMonth = new Date(year, month+1, 0).getDate();
+
+      // Pad empty cells before day 1
+      for(let i=0;i<startDay;i++){
+        const pad = document.createElement('div');
+        pad.className = 'cal-cell';
+        container.appendChild(pad);
+      }
+
+      const today = new Date();
+      const isSameMonth = (today.getFullYear()===year && today.getMonth()===month);
+
+      // Create day cells
+      for(let d=1; d<=daysInMonth; d++){
+        const cell = document.createElement('div');
+        cell.className = 'cal-cell';
+        if(isSameMonth && d===today.getDate()) cell.classList.add('today');
+
+        // Day number
+        const dn = document.createElement('div');
+        dn.className = 'day';
+        dn.textContent = d;
+        cell.appendChild(dn);
+
+        // Optional note
+        if (notes && notes[d]){
+          const note = document.createElement('div');
+          note.className = 'cal-note';
+          note.textContent = "🎀 " + notes[d];
+          cell.appendChild(note);
+        }
+
+        container.appendChild(cell);
+      }
+    }
+
+    const calRoot = document.getElementById('calendar');
+    buildCalendar(calRoot, CAL_DATA);
+  </script>
+</body>
+</html>
