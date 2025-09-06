@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
   <!-- =========================================================
-       Hearts in the Margins — single-file static site
+       Kamiuma Book Club — single-file static site
        Tech: HTML + CSS + vanilla JS (no build tools)
-       Design: Coquette/retro — baby pink, cherry accents, bows
+       Design: Y2K / retro handheld vibes — warm yellow + sparkles
        Font: Press Start 2P (pixel/arcade vibe)
        ========================================================= -->
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Hearts in the Margins · Book Club</title>
+  <title>Kamiuma Book Club</title>
 
   <!-- Retro pixel font -->
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
@@ -19,16 +19,16 @@
        THEME TOKENS (easy edits)
        ========================= */
     :root{
-      /* Colors */
-      --pink: #FFCFEF; /* baby pink background */
-      --cherry:#D90452; /* accent for buttons/links */
-      --cherry-dark:#980238;
-      --ink:#0b0f14; /* dark text */
-      --panel:#fff; /* white card/panel */
-      --grid:#ffe6f6; /* subtle grid over pink */
-      --border:#f6a9c9; /* soft border */
-      --border-strong:#c66;/* stronger border */
-      --select:#ffeaf5; /* selected card */
+      /* Colors: yellow-first, with red accents for that cartridge-era feel */
+      --y-bg: #FFF7C8; /* warm screen-yellow background */
+      --y-panel:#FFFFFF; /* white card/panel */
+      --ink:#0b0f14; /* dark text/pixel outline */
+      --grid:#fff0b8; /* subtle grid over yellow */
+      --accent:#C61A1A; /* retro red (links/buttons border) */
+      --accent-dark:#7E0E0E; /* darker red shadow */
+      --border:#f2d77a; /* soft yellow border */
+      --border-strong:#d1b84f;/* stronger border */
+      --select:#fff5c9; /* selected card tint */
 
       /* Sizing */
       --radius:14px;
@@ -43,9 +43,10 @@
     body{
       margin:0;
       background:
+        radial-gradient(800px 400px at -10% -10%, #fffde6 0 35%, transparent 36%),
         repeating-linear-gradient(0deg, var(--grid) 0 2px, transparent 2px 22px),
         repeating-linear-gradient(90deg, var(--grid) 0 2px, transparent 2px 22px),
-        var(--pink);
+        var(--y-bg);
       color:var(--ink);
       font-family:'Press Start 2P', system-ui, sans-serif;
       line-height:1.6;
@@ -58,7 +59,7 @@
        HEADER / HERO
        ========================= */
     .hero{
-      background:var(--panel);
+      background:var(--y-panel);
       border:4px solid var(--ink);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -67,28 +68,22 @@
       overflow:hidden;
     }
     .hero h1{
-      margin:0 0 8px;
+      margin:0;
       font-size:20px;
       text-align:center;
     }
-    .tagline{
-      text-align:center;
-      font-size:12px;
-      color:var(--cherry-dark);
-      margin:0 0 8px;
+    /* sparkle motif */
+    .sparkles{
+      display:flex; align-items:center; justify-content:center; gap:12px;
+      margin-top:10px; opacity:.9;
+      filter: drop-shadow(2px 2px 0 rgba(0,0,0,.15));
     }
-    /* Tiny bow separators (motif) */
-    .bow-row{
-      display:flex; align-items:center; justify-content:center; gap:10px;
-      margin:8px 0 0;
-    }
-    .bow{ filter: drop-shadow(2px 2px 0 var(--ink)); }
 
     /* =========================
        COMMON UI
        ========================= */
     .panel{
-      background:var(--panel);
+      background:var(--y-panel);
       border:4px solid var(--ink);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
@@ -97,7 +92,7 @@
     }
     .section-title{
       display:flex; align-items:center; gap:8px;
-      margin:0 0 12px; font-size:14px; color:var(--cherry-dark);
+      margin:0 0 12px; font-size:14px; color:var(--accent);
     }
     .grid{
       display:grid; gap:12px;
@@ -117,7 +112,7 @@
     .book-card:hover{
       border-color:var(--border-strong);
       background:var(--select);
-      box-shadow:0 0 0 4px rgba(217,4,82,.1) inset;
+      box-shadow:0 0 0 4px rgba(214, 182, 50, .15) inset;
     }
     .book-title{ font-size:12px; margin:0 0 6px; }
     .book-meta{ font-size:11px; opacity:.9; }
@@ -125,15 +120,16 @@
     /* Buttons / links */
     .btn{
       appearance:none; border:none; cursor:pointer;
-      background:var(--cherry); color:#fff;
-      border:3px solid var(--cherry-dark);
-      box-shadow:4px 4px 0 var(--cherry-dark);
+      background:#ffd45a; color:#3a2b00;
+      border:3px solid var(--accent);
+      box-shadow:4px 4px 0 var(--accent-dark);
       border-radius:12px;
       padding:12px 14px; font:inherit; font-size:12px;
-      transition:transform .02s ease-in;
+      transition:transform .02s ease-in, background var(--quick);
     }
-    .btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--cherry-dark); }
-    a.link{ color:var(--cherry-dark); text-decoration:underline; }
+    .btn:hover{ background:#ffe48f; }
+    .btn:active{ transform:translate(2px,2px); box-shadow:2px 2px 0 var(--accent-dark); }
+    a.link{ color:var(--accent); text-decoration:underline; }
 
     /* Forms */
     .field{ display:flex; flex-direction:column; gap:6px; margin:8px 0; }
@@ -145,10 +141,12 @@
     }
     .help{ font-size:11px; opacity:.8; }
 
-    /* Pixel calendar */
+    /* Pixel calendar — fluid columns to avoid mobile overflow */
     .calendar{
+      width:100%;
+      overflow:hidden; /* keep inside on tiny screens */
       display:grid; gap:8px;
-      grid-template-columns: repeat(7, 1fr);
+      grid-template-columns: repeat(7, minmax(0, 1fr));
       border:2px solid var(--ink); border-radius:12px; padding:10px;
       background:#fff;
     }
@@ -160,13 +158,23 @@
       position:relative;
       transition:background var(--quick), border-color var(--quick);
     }
+    .cal-head{ background:#fff5cc; font-weight:bold; }
     .cal-cell.today{ background:var(--select); border-color:var(--border-strong); }
     .cal-cell .day{ position:absolute; top:6px; right:8px; font-size:10px; opacity:.6; }
-    .cal-note{ font-size:10px; margin-top:18px; color:var(--cherry-dark); }
+    .cal-note{ font-size:10px; margin-top:18px; color:#856300; }
+
+    /* little sparkle sticker in headers */
+    .sticker{ font-size:14px; filter: drop-shadow(2px 2px 0 rgba(0,0,0,.12)); }
 
     /* Footer */
     .footer-note{
       text-align:center; font-size:11px; opacity:.7; margin-top:24px;
+    }
+
+    /* Tiny mobile tune-up */
+    @media (max-width:420px){
+      .calendar{ gap:6px; padding:8px; border-radius:10px; }
+      .cal-cell{ min-height:78px; padding:6px; border-radius:10px; font-size:9px; }
     }
   </style>
 </head>
@@ -174,32 +182,20 @@
   <div class="wrap">
     <!-- =========================================================
          HEADER / HERO
-         - Edit the h1 to rename the club
-         - Edit the tagline text to change your mission line
          ========================================================= -->
     <header class="hero" aria-labelledby="site-title">
-      <h1 id="site-title">Hearts in the Margins</h1>
-      <p class="tagline">“we read what’s hard — to keep our hearts soft”</p>
-
-      <!-- Bows motif row (you can delete if you want it simpler) -->
-      <div class="bow-row" aria-hidden="true">
-        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
-        </svg>
-        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
-        </svg>
-        <svg class="bow" width="28" height="20" viewBox="0 0 64 46" fill="#D90452" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 6C4 10 2 24 10 30s18 2 22-4c4 6 14 10 22 4s6-20-2-24c-6-3-14 1-20 10C26 7 18 3 12 6z"/>
-        </svg>
+      <h1 id="site-title">Kamiuma Book Club</h1>
+      <div class="sparkles" aria-hidden="true">
+        <span class="sticker">✨</span><span class="sticker">⭐</span><span class="sticker">✨</span>
+        <span class="sticker">⭐</span><span class="sticker">✨</span>
       </div>
     </header>
 
     <!-- =========================================================
-         CURRENT READ (edit text only)
+         CURRENT READ
          ========================================================= -->
     <section class="panel" aria-labelledby="current-read">
-      <h2 id="current-read" class="section-title">📖 Current Read</h2>
+      <h2 id="current-read" class="section-title"><span class="sticker">✨</span> Current Read</h2>
       <div class="book-card">
         <h3 class="book-title"><em>Hillbilly Elegy</em> — JD Vance</h3>
         <p class="book-meta">
@@ -210,10 +206,10 @@
     </section>
 
     <!-- =========================================================
-         PAST READS (add/remove cards freely)
+         PAST READS
          ========================================================= -->
     <section class="panel" aria-labelledby="past-reads">
-      <h2 id="past-reads" class="section-title">✨ Past Reads</h2>
+      <h2 id="past-reads" class="section-title"><span class="sticker">⭐</span> Past Reads</h2>
 
       <div class="grid">
         <article class="book-card">
@@ -229,13 +225,22 @@
     </section>
 
     <!-- =========================================================
-         SUGGEST A BOOK (anonymous)
+         EVENTS CALENDAR (playful pixel grid)
+         ========================================================= -->
+    <section class="panel" aria-labelledby="events">
+      <h2 id="events" class="section-title"><span class="sticker">✨</span> Events (Pixel Calendar)</h2>
+      <div id="calendar" class="calendar" aria-label="Month view calendar"></div>
+      <p class="help">We’ll post meeting dates here. For now: <strong>TBA</strong>.</p>
+    </section>
+
+    <!-- =========================================================
+         SUGGEST A BOOK (anonymous) — moved to the END
          - Replace WEBHOOK_URL with your Formspree endpoint
          - Title + Author only; optional note (links blocked)
          - Includes a honeypot field (#clubhouse) to catch bots
          ========================================================= -->
     <section class="panel" aria-labelledby="suggest">
-      <h2 id="suggest" class="section-title">💌 Suggest a Book (Anonymous)</h2>
+      <h2 id="suggest" class="section-title"><span class="sticker">⭐</span> Suggest a Book (Anonymous)</h2>
 
       <form id="suggestForm" novalidate>
         <!-- Title -->
@@ -266,20 +271,9 @@
     </section>
 
     <!-- =========================================================
-         EVENTS CALENDAR (playful pixel grid)
-         - Static example month with TBA "quests"
-         - Edit days/notes by changing CAL_DATA in the script
-         ========================================================= -->
-    <section class="panel" aria-labelledby="events">
-      <h2 id="events" class="section-title">🗓 Events (Pixel Calendar)</h2>
-      <div id="calendar" class="calendar" aria-label="Month view calendar"></div>
-      <p class="help">We’ll post meeting dates here. For now: <strong>TBA</strong>.</p>
-    </section>
-
-    <!-- =========================================================
          FOOTER
          ========================================================= -->
-    <footer class="footer-note">♡ Hearts in the Margins · made with bows &amp; books ♡</footer>
+    <footer class="footer-note">♡ Kamiuma Book Club · reading across lines ♡</footer>
   </div>
 
   <script>
@@ -290,27 +284,20 @@
        ============================================================ */
     const WEBHOOK_URL = "YOUR_FORMSPREE_ENDPOINT_HERE"; // e.g., "https://formspree.io/f/xandlaqr"
 
-    // Block obvious links in free-text (keeps submissions safe)
+    // Block obvious links in free-text (keeps submissions safer)
     const LINK_RE = /(https?:\/\/|www\.|\.com\b|\.net\b|\.org\b|\.io\b|\.jp\b|\.ru\b|\.cn\b)/i;
 
-    // Simple calendar data (example month). Change month/year/notes as needed.
+    // Simple calendar data (default = current month). Edit freely.
     const CAL_DATA = {
       year: new Date().getFullYear(),
-      month: new Date().getMonth(), // 0=Jan ... 11=Dec (auto current month)
-      // Put notes keyed by day number. Example: 12: "Pick next book"
+      month: new Date().getMonth(), // 0=Jan ... 11=Dec
       notes: {
-        // Example placeholders you can edit later:
-        // 5: "Reading sprint",
-        // 17: "TBA: discussion"
+        // e.g., 5: "Reading sprint", 17: "TBA: discussion"
       }
     };
 
     /* ============================================================
        SUGGESTION FORM HANDLER
-       - Validates required fields
-       - Blocks URLs in the optional note
-       - Uses a honeypot field to drop basic bots
-       - Sends JSON to Formspree
        ============================================================ */
     const form = document.getElementById('suggestForm');
     const sTitle = document.getElementById('sTitle');
@@ -319,7 +306,7 @@
     const sStatus = document.getElementById('sStatus');
     const honeypot = document.getElementById('clubhouse');
 
-    form.addEventListener('submit', async (e) => {
+    form?.addEventListener('submit', async (e) => {
       e.preventDefault();
       sStatus.textContent = '';
 
@@ -342,7 +329,7 @@
         return;
       }
 
-      // 4) Build payload (keep it short & clear for your inbox)
+      // 4) Build payload (simple & clear for your inbox)
       const payload = {
         type: "book_suggestion",
         title: sTitle.value.trim(),
@@ -374,30 +361,25 @@
        PLAYFUL PIXEL CALENDAR
        - Renders a simple month grid
        - Highlights "today"
-       - Drops your notes (quests) into cells
-       - To freeze a specific month, set CAL_DATA.year/month manually
+       - Drops your notes into cells
        ============================================================ */
     function buildCalendar(container, conf){
       const {year, month, notes} = conf;
       container.innerHTML = "";
 
-      // Day names row (Sun-first; change order if you prefer Mon-first)
       const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
       dayNames.forEach(name=>{
         const h = document.createElement('div');
-        h.className = 'cal-cell';
-        h.style.background = '#fff4f8';
-        h.style.fontWeight = 'bold';
+        h.className = 'cal-cell cal-head';
         h.textContent = name;
         container.appendChild(h);
       });
 
-      // Calculate month bounds
       const first = new Date(year, month, 1);
       const startDay = first.getDay(); // 0=Sun
       const daysInMonth = new Date(year, month+1, 0).getDate();
 
-      // Pad empty cells before day 1
+      // pad before 1st
       for(let i=0;i<startDay;i++){
         const pad = document.createElement('div');
         pad.className = 'cal-cell';
@@ -407,23 +389,21 @@
       const today = new Date();
       const isSameMonth = (today.getFullYear()===year && today.getMonth()===month);
 
-      // Create day cells
+      // days
       for(let d=1; d<=daysInMonth; d++){
         const cell = document.createElement('div');
         cell.className = 'cal-cell';
         if(isSameMonth && d===today.getDate()) cell.classList.add('today');
 
-        // Day number
         const dn = document.createElement('div');
         dn.className = 'day';
         dn.textContent = d;
         cell.appendChild(dn);
 
-        // Optional note
         if (notes && notes[d]){
           const note = document.createElement('div');
           note.className = 'cal-note';
-          note.textContent = "🎀 " + notes[d];
+          note.textContent = "✨ " + notes[d];
           cell.appendChild(note);
         }
 
